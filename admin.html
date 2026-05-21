@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masjid Notice Board — Admin Control Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #080a10;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --accent-blue: #0a84ff;
+            --accent-green: #30d158;
+            --accent-red: #ff453a;
+            --accent-gold: #ffd60a;
+            --radius-xl: 18px;
+            --radius-2xl: 24px;
+            --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-malayalam: 'Noto Sans Arabic', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 214, 10, 0.05) 0%, transparent 45%);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .admin-card {
+            background: rgba(20, 25, 40, 0.55);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-2xl);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            width: 100%;
+            max-width: 680px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.04);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .admin-logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 15px rgba(10, 132, 255, 0.4));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            background: linear-gradient(180deg, #fff, #bbb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .admin-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: var(--font-malayalam);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        textarea:focus {
+            border-color: var(--accent-blue);
+            background: rgba(10, 132, 255, 0.05);
+            box-shadow: 0 0 15px rgba(10, 132, 255, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .templates-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .template-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-family: var(--font-malayalam);
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            line-height: 1.4;
+        }
+
+        .template-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .passcode-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            outline: none;
+            letter-spacing: 4px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .passcode-input:focus {
+            border-color: var(--accent-blue);
+            background: rgba(10, 132, 255, 0.05);
+        }
+
+        .publish-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent-blue);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-xl);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(10, 132, 255, 0.35);
+        }
+
+        .publish-btn:hover {
+            transform: translateY(-2px);
+            background: #2492ff;
+            box-shadow: 0 12px 30px rgba(10, 132, 255, 0.5);
+        }
+
+        .publish-btn:active {
+            transform: translateY(1px);
+        }
+
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Live Preview Widget */
+        .preview-container {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .preview-board {
+            display: flex;
+            align-items: center;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0 15px;
+            overflow: hidden;
+        }
+
+        .preview-badge {
+            background: rgba(10, 132, 255, 0.2);
+            color: var(--accent-blue);
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .preview-text {
+            font-family: var(--font-malayalam);
+            font-size: 1.15rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-primary);
+            flex-grow: 1;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(48, 209, 88, 0.95);
+            border: 1px solid rgba(48, 209, 88, 0.3);
+            box-shadow: 0 10px 30px rgba(48, 209, 88, 0.3);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-card">
+        <div class="admin-header">
+            <div class="admin-logo">🕌</div>
+            <h1>Masjid Notice Board Control</h1>
+            <p class="admin-subtitle">Update Malayalam notice board scrolling notifications instantly</p>
+        </div>
+
+        <div class="input-group">
+            <label for="noticeText">Notification Message (Malayalam)</label>
+            <textarea id="noticeText" placeholder="അറിയിപ്പുകൾ ഇവിടെ ടൈപ്പ് ചെയ്യുക..."></textarea>
+        </div>
+
+        <div class="templates-label">Quick Announcement Templates</div>
+        <div class="templates-grid">
+            <button class="template-btn" onclick="applyTemplate(1)">🕌 ഈ വെള്ളിയാഴ്ചത്തെ ജുമാ നമസ്കാരം 12:30 ന് ആരംഭിക്കുന്നതാണ്. എല്ലാവരും സമയത്തു തന്നെ എത്തിച്ചേരുക.</button>
+            <button class="template-btn" onclick="applyTemplate(2)">📢 ഇന്ന് മഗ്‌രിബ് നമസ്കാരത്തിന് ശേഷം പള്ളിയിൽ വെച്ച് പ്രത്യേക മതാചാര ക്ലാസ് ഉണ്ടായിരിക്കുന്നതാണ്.</button>
+            <button class="template-btn" onclick="applyTemplate(3)">💰 മസ്ജിദ് വിപുലീകരണ പ്രവർത്തനങ്ങൾക്കുള്ള സംഭാവനകൾ കമ്മിറ്റി ഓഫീസിൽ ഏൽപ്പിക്കേണ്ടതാണ്.</button>
+            <button class="template-btn" onclick="applyTemplate(4)">🌙 എല്ലാ മുസ്ലിം സഹോദരങ്ങൾക്കും ഹൃദയം നിറഞ്ഞ ഈദുൽ ഫിത്വ്ര് ആശംസകൾ നേരുന്നു!</button>
+        </div>
+
+        <div class="input-group" style="max-width: 250px; margin: 0 auto 25px auto;">
+            <label for="passcodeInput" style="text-align: center;">Security Passcode</label>
+            <input type="password" id="passcodeInput" class="passcode-input" maxlength="4" placeholder="••••">
+        </div>
+
+        <button class="publish-btn" onclick="publishNotice()">Publish Notification</button>
+
+        <div class="preview-container">
+            <label>Live Display Board Preview</label>
+            <div class="preview-board">
+                <div class="preview-badge">Notice:</div>
+                <div class="preview-text" id="previewText">അറിയിപ്പുകൾ ഇവിടെ കാണാം.</div>
+            </div>
+        </div>
+
+        <div class="action-row">
+            <a href="index.html" class="back-link">← Return to Digital Prayer Clock</a>
+            <span style="color: var(--text-secondary); font-size: 0.85rem;">Zakariya Juma Masjid Admin</span>
+        </div>
+    </div>
+
+    <!-- macOS style success toast -->
+    <div id="toast" class="toast">
+        <span style="font-size: 1.25rem;">✓</span> Notification published successfully in real-time!
+    </div>
+
+    <script>
+        const textarea = document.getElementById('noticeText');
+        const preview = document.getElementById('previewText');
+        const passcodeInput = document.getElementById('passcodeInput');
+
+        // Load existing notice
+        const currentNotice = localStorage.getItem('masjidNotice') || "സക്കരിയ്യാ ജുമാ മസ്ജിദ് ഥാന - ജമാഅത്ത് സമയം: ഫജ്‌ർ 5:00 AM, ദുഹർ 12:35 PM, അസർ 5:05 PM, മഗ്‌രിബ് 6:52 PM, ഇശാ 8:27 PM.";
+        textarea.value = currentNotice;
+        preview.textContent = currentNotice;
+
+        // Auto update preview on type
+        textarea.addEventListener('input', () => {
+            preview.textContent = textarea.value.trim() || "അറിയിപ്പുകൾ ഇവിടെ കാണാം.";
+        });
+
+        // Templates handler
+        function applyTemplate(id) {
+            const templates = {
+                1: "ഈ വെള്ളിയാഴ്ചത്തെ ജുമാ നമസ്കാരം 12:30 ന് ആരംഭിക്കുന്നതാണ്. എല്ലാവരും സമയത്തു തന്നെ എത്തിച്ചേരുക.",
+                2: "ഇന്ന് മഗ്‌രിബ് നമസ്കാരത്തിന് ശേഷം പള്ളിയിൽ വെച്ച് പ്രത്യേക മതാചാര ക്ലാസ് ഉണ്ടായിരിക്കുന്നതാണ്. എല്ലാ വിശ്വാസികളും പങ്കെടുക്കുക.",
+                3: "മസ്ജിദ് വിപുലീകരണ പ്രവർത്തനങ്ങൾക്കുള്ള സംഭാവനകൾ കമ്മിറ്റി ഓഫീസിൽ അല്ലെങ്കിൽ പള്ളിയുടെ ബാങ്ക് അക്കൗണ്ടിലേക്ക് നൽകേണ്ടതാണ്.",
+                4: "എല്ലാ മുസ്ലിം സഹോദരങ്ങൾക്കും ഹൃദയം നിറഞ്ഞ ഈദുൽ ഫിത്വ്ര് ആശംസകൾ നേരുന്നു! അല്ലാഹു നമ്മിൽ നിന്നും സ്വീകരിക്കുമാറാകട്ടെ."
+            };
+            textarea.value = templates[id];
+            preview.textContent = templates[id];
+            
+            // Highlight text area visually
+            textarea.focus();
+        }
+
+        // Publish to LocalStorage
+        function publishNotice() {
+            // Very simple passcode validation for kiosk protection
+            if (passcodeInput.value !== '1234') {
+                alert('തെറ്റായ പാസ്‌കോഡ്! ദയവായി ശരിയായ അഡ്മിൻ പാസ്‌കോഡ് നൽകുക. (Passcode is 1234)');
+                passcodeInput.focus();
+                return;
+            }
+
+            const newText = textarea.value.trim();
+            if (!newText) {
+                alert('ദയവായി അറിയിപ്പ് രേഖപ്പെടുത്തുക!');
+                return;
+            }
+
+            localStorage.setItem('masjidNotice', newText);
+            
+            // Display macOS successful toast
+            const toast = document.getElementById('toast');
+            toast.classList.add('visible');
+            setTimeout(() => {
+                toast.classList.remove('visible');
+            }, 3500);
+
+            passcodeInput.value = ''; // Reset passcode
+        }
+    </script>
+</body>
+</html>

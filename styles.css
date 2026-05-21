@@ -1,0 +1,1072 @@
+/* ==========================================================
+   ===== Apple-Inspired Ultra-Premium Theme =====
+   ========================================================== */
+/* Created with absolute precision, high-fidelity glassmorphism, 
+   and dynamic fluid lighting for a stunning, state-of-the-art display. */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap');
+
+:root {
+    /* Premium Apple Color Palette */
+    --bg-base: #020205;
+    
+    /* Elegant High-Fidelity Glassmorphism */
+    --glass-bg: rgba(0, 0, 0, 0.35);
+    --glass-bg-hover: rgba(0, 0, 0, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-hover: rgba(255, 255, 255, 0.2);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+
+    /* Text Scales */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --text-tertiary: rgba(255, 255, 255, 0.4);
+    --text-muted: rgba(255, 255, 255, 0.25);
+
+    /* Apple Brand Colors (tailored for dark display contrast) */
+    --accent-blue: #0a84ff;
+    --accent-blue-rgb: 10, 132, 255;
+    --accent-emerald: #30d158;
+    --accent-emerald-rgb: 48, 209, 88;
+    --accent-gold: #ffd60a;
+    --accent-gold-rgb: 255, 214, 10;
+    --accent-orange: #ff9f0a;
+    --accent-red: #ff453a;
+
+    /* Active States */
+    --card-active: rgba(10, 132, 255, 0.08);
+    --card-active-border: rgba(10, 132, 255, 0.35);
+    --card-next: rgba(255, 214, 10, 0.07);
+    --card-next-border: rgba(255, 214, 10, 0.3);
+
+    /* Border Radii */
+    --radius-2xl: 24px;
+    --radius-xl: 18px;
+    --radius-lg: 14px;
+    --radius-md: 10px;
+
+    /* Timing */
+    --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== Basic Reset ===== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Outfit', 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================
+   ===== Canvas Weather Background =====
+   ========================================================== */
+#weatherCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    pointer-events: none;
+}
+
+
+/* ==========================================================
+   ===== Main Container & Layout Structure =====
+   ========================================================== */
+.main-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5vw 2vw;
+    gap: 1.2vw;
+}
+
+/* ==========================================================
+   ===== Sleek Header Component =====
+   ========================================================== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1vw 2.5vw;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(40px) saturate(210%);
+    -webkit-backdrop-filter: blur(40px) saturate(210%);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.03);
+    animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.header-left, .header-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.header-right {
+    align-items: flex-end;
+    text-align: right;
+}
+
+/* Mosque Brand */
+.header-center {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    flex-shrink: 0;
+}
+
+.mosque-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.15));
+}
+
+.mosque-svg {
+    width: clamp(34px, 3.2vw, 48px);
+    height: auto;
+    color: var(--text-primary);
+    transition: var(--transition-smooth);
+}
+
+.header-center:hover .mosque-svg {
+    transform: scale(1.05);
+    color: var(--accent-gold);
+    filter: drop-shadow(0 0 15px rgba(255, 214, 10, 0.4));
+}
+
+.mosque-name {
+    font-size: clamp(1.3rem, 2.2vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(180deg, #ffffff 30%, #d2d2d7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mosque-location {
+    font-size: clamp(0.55rem, 0.75vw, 0.75rem);
+    color: var(--text-tertiary);
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 1px;
+}
+
+/* Dates and widgets */
+.hijri-date {
+    font-size: clamp(0.85rem, 1.05vw, 1.1rem);
+    color: var(--accent-gold);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0 2px 10px rgba(255, 214, 10, 0.15);
+}
+
+.arabic-day {
+    font-family: 'Amiri', 'Noto Sans Arabic', serif;
+    font-size: clamp(0.75rem, 0.95vw, 1rem);
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.gregorian-date {
+    font-size: clamp(0.85rem, 1.05vw, 1.1rem);
+    color: var(--text-primary);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+.weather-widget {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    padding: 3px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+}
+
+.weather-icon {
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+}
+
+.weather-temp {
+    font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   ===== Apple Hero Clock Section =====
+   ========================================================== */
+.clock-section {
+    flex: 1.1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5vw;
+    padding: 1vw 0;
+    animation: fadeInScale 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.hero-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.hero-time-row {
+    display: flex;
+    align-items: baseline;
+    line-height: 0.9;
+}
+
+.hero-hours,
+.hero-minutes {
+    font-size: clamp(6rem, 13.5vw, 11.5rem);
+    font-weight: 200;
+    color: var(--text-primary);
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.hero-colon {
+    font-size: clamp(5rem, 11vw, 9rem);
+    font-weight: 100;
+    color: var(--text-secondary);
+    margin: 0 -0.01em;
+    animation: smoothBlink 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    position: relative;
+    top: -0.07em;
+}
+
+@keyframes smoothBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.12; }
+}
+
+.hero-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: clamp(10px, 1.2vw, 18px);
+    gap: 4px;
+    align-self: center;
+}
+
+.hero-seconds {
+    font-size: clamp(1.2rem, 2.2vw, 2rem);
+    font-weight: 300;
+    color: var(--accent-blue);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px rgba(10, 132, 255, 0.25);
+}
+
+.hero-period {
+    font-size: clamp(0.75rem, 1.1vw, 1.1rem);
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* Sleek subtle micro-progressbar */
+.hero-progress-bar {
+    width: 100%;
+    max-width: clamp(260px, 32vw, 480px);
+    height: 3px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+    margin-top: clamp(12px, 1.5vw, 22px);
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.hero-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, #a25cfa 100%);
+    border-radius: 10px;
+    transition: width 1s linear;
+    box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
+}
+
+/* Elegant glass vertical divider */
+.hero-divider {
+    width: 1px;
+    height: clamp(80px, 8vw, 120px);
+    background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.12) 30%, rgba(255, 255, 255, 0.12) 70%, transparent 100%);
+    flex-shrink: 0;
+}
+
+/* Next Prayer Apple Widget */
+.next-prayer-info {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 1.5vw 2.5vw;
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
+}
+
+.next-label {
+    font-size: clamp(0.65rem, 0.85vw, 0.85rem);
+    color: var(--accent-gold);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.6vw;
+}
+
+.next-prayer-name {
+    font-size: clamp(2.4rem, 4.5vw, 4rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #ffffff 40%, #c4c4c9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.4vw;
+}
+
+.countdown {
+    font-size: clamp(1.5rem, 2.8vw, 2.8rem);
+    font-weight: 200;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+}
+
+/* ==========================================================
+   ===== Prayer Cards Grid (Apple Watch Style Face) =====
+   ========================================================== */
+.prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: clamp(10px, 1vw, 18px);
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.prayer-card {
+    position: relative;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    padding: clamp(14px, 1.5vw, 24px) clamp(10px, 1vw, 16px);
+    text-align: center;
+    backdrop-filter: blur(35px) saturate(180%);
+    -webkit-backdrop-filter: blur(35px) saturate(180%);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 1px 0 rgba(255, 255, 255, 0.04);
+    transition: var(--transition-smooth);
+    overflow: hidden;
+}
+
+/* Top colored accent indicator line */
+.prayer-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 3px;
+    background: var(--accent-blue);
+    opacity: 0;
+    border-radius: 0 0 4px 4px;
+    transition: var(--transition-smooth);
+}
+
+.prayer-card:hover {
+    background: var(--glass-bg-hover);
+    border-color: var(--glass-border-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+}
+
+.prayer-card:hover::before {
+    opacity: 0.5;
+    left: 15%;
+    right: 15%;
+}
+
+/* Card Glow effect */
+.card-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.03), transparent 70%);
+    pointer-events: none;
+}
+
+/* Card Active Style (Glowing Blue Apple Complication) */
+.prayer-card.active {
+    background: rgba(10, 132, 255, 0.06);
+    border-color: var(--card-active-border);
+    box-shadow: 
+        0 0 35px rgba(10, 132, 255, 0.12),
+        inset 0 1px 1px rgba(10, 132, 255, 0.2);
+}
+
+.prayer-card.active::before {
+    opacity: 1;
+    left: 0;
+    right: 0;
+    background: var(--accent-blue);
+    box-shadow: 0 0 12px var(--accent-blue);
+}
+
+.prayer-card.active .prayer-time {
+    color: var(--text-primary);
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+.prayer-card.active .prayer-name-en {
+    color: var(--accent-blue);
+    font-weight: 700;
+}
+
+.prayer-card.active .prayer-status {
+    color: var(--accent-blue);
+    font-weight: 700;
+    animation: flashActive 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes flashActive {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Card Next State (Glowing Amber Complication) */
+.prayer-card.next-up {
+    background: rgba(255, 214, 10, 0.05);
+    border-color: var(--card-next-border);
+    box-shadow: 
+        0 0 30px rgba(255, 214, 10, 0.08),
+        inset 0 1px 1px rgba(255, 214, 10, 0.15);
+}
+
+.prayer-card.next-up::before {
+    opacity: 1;
+    left: 0;
+    right: 0;
+    background: var(--accent-gold);
+    box-shadow: 0 0 10px var(--accent-gold);
+}
+
+.prayer-card.next-up .prayer-name-en {
+    color: var(--accent-gold);
+}
+
+.prayer-card.next-up .prayer-status {
+    color: var(--accent-gold);
+}
+
+/* Card Passed State */
+.prayer-card.passed {
+    opacity: 0.35;
+    transform: scale(0.98);
+}
+
+.prayer-card.passed:hover {
+    opacity: 0.7;
+    transform: scale(1) translateY(-2px);
+}
+
+/* Complication Inside Elements */
+.prayer-icon {
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    margin-bottom: 6px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+
+.prayer-card:hover .prayer-icon {
+    transform: scale(1.15) translateY(-2px);
+}
+
+.prayer-name-ar {
+    font-family: 'Amiri', 'Noto Sans Arabic', serif;
+    font-size: clamp(0.95rem, 1.35vw, 1.4rem);
+    color: var(--text-primary);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+
+.prayer-name-en {
+    font-size: clamp(0.65rem, 0.85vw, 0.9rem);
+    color: var(--text-tertiary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    transition: var(--transition-smooth);
+}
+
+/* Times Layout inside complication */
+.prayer-times-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 0.8vw, 14px);
+    margin-top: 6px;
+    background: rgba(0,0,0,0.18);
+    padding: 8px 6px;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.02);
+}
+
+.prayer-times-row.single {
+    margin-top: 8px;
+    background: transparent;
+    border: none;
+    padding: 4px;
+}
+
+.time-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.time-label {
+    font-size: clamp(0.45rem, 0.6vw, 0.65rem);
+    color: var(--text-tertiary);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.prayer-time {
+    font-size: clamp(1rem, 1.4vw, 1.45rem);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    transition: var(--transition-smooth);
+}
+
+/* Dual Column Highlight for Iqamah */
+.iqama-label-card {
+    color: var(--accent-emerald) !important;
+    opacity: 0.9;
+}
+
+.iqama-time-card {
+    color: var(--accent-emerald) !important;
+    font-weight: 700 !important;
+    text-shadow: 0 0 10px rgba(48, 209, 88, 0.15);
+}
+
+.time-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.prayer-status {
+    font-size: clamp(0.55rem, 0.75vw, 0.75rem);
+    margin-top: 8px;
+    height: 16px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+}
+
+/* ==========================================================
+   ===== Hadith / Verse Ticker Slider =====
+   ========================================================== */
+.hadith-ticker {
+    overflow: hidden;
+    padding: 0.6vw 0;
+    position: relative;
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 100px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.ticker-content {
+    display: flex;
+    white-space: nowrap;
+    animation: tickerScroll var(--ticker-duration, 55s) linear infinite;
+    will-change: transform;
+}
+
+.ticker-content:hover {
+    animation-play-state: paused;
+}
+
+.ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5vw;
+    padding: 0 3vw;
+    flex-shrink: 0;
+}
+
+.ticker-arabic {
+    font-family: 'Amiri', serif;
+    font-size: clamp(0.95rem, 1.25vw, 1.3rem);
+    color: var(--text-primary);
+    direction: rtl;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.ticker-english {
+    font-size: clamp(0.75rem, 0.95vw, 1rem);
+    color: var(--text-secondary);
+    font-style: italic;
+    font-weight: 300;
+}
+
+.ticker-separator {
+    color: var(--accent-gold);
+    font-size: 0.75rem;
+    padding: 0 1vw;
+    filter: drop-shadow(0 0 5px rgba(255, 214, 10, 0.4));
+}
+
+/* ==========================================================
+   ===== Sleek Dock Footer =====
+   ========================================================== */
+/* ==========================================================
+   ===== Premium Glassmorphic Notice Board =====
+   ========================================================== */
+.notice-board-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    height: 75px;
+    padding: 0 2vw;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(40px) saturate(210%);
+    -webkit-backdrop-filter: blur(40px) saturate(210%);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.03);
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    position: relative;
+    overflow: hidden;
+}
+
+.notice-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(10, 132, 255, 0.15);
+    border: 1px solid rgba(10, 132, 255, 0.3);
+    border-radius: 50px;
+    color: #0a84ff;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 0 15px rgba(10, 132, 255, 0.15);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.notice-pulse {
+    width: 8px;
+    height: 8px;
+    background: #0a84ff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #0a84ff;
+    animation: noticePulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes noticePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(1.3); }
+}
+
+.notice-icon {
+    font-size: 1.1rem;
+}
+
+.notice-title {
+    font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
+    font-size: 1.05rem;
+}
+
+.notice-text-wrap {
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100%;
+    padding: 0 10px;
+}
+
+.notice-message {
+    font-family: 'Noto Sans Arabic', 'Amiri', 'Outfit', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.admin-cog-btn {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: transform 0.4s ease, color 0.3s ease;
+    opacity: 0.4;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-cog-btn:hover {
+    transform: rotate(90deg);
+    color: var(--accent-gold);
+    opacity: 1;
+}
+
+/* ==========================================================
+   ===== Cinematic Fullscreen Alert Overlay =====
+   ========================================================== */
+.prayer-alert-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 2, 5, 0.95);
+    backdrop-filter: blur(60px) saturate(220%);
+    -webkit-backdrop-filter: blur(60px) saturate(220%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.prayer-alert-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Glowing overlay ambient light */
+.prayer-alert-overlay::after {
+    content: '';
+    position: absolute;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(10, 132, 255, 0.15) 0%, transparent 70%);
+    filter: blur(100px);
+    z-index: -1;
+    pointer-events: none;
+    animation: alertBackgroundPulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes alertBackgroundPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+    100% { transform: scale(1.15) translate(2vw, 3vh); opacity: 1; }
+}
+
+.alert-content {
+    text-align: center;
+    max-width: 80vw;
+    z-index: 10;
+}
+
+.prayer-alert-overlay.active .alert-content {
+    animation: alertZoomIn 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes alertZoomIn {
+    from { opacity: 0; transform: scale(0.93) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.alert-icon {
+    font-size: clamp(4.5rem, 7vw, 7rem);
+    margin-bottom: 1.5rem;
+    color: var(--accent-gold);
+    filter: drop-shadow(0 0 20px rgba(255, 214, 10, 0.45));
+    animation: alertIconRotate 20s linear infinite;
+}
+
+@keyframes alertIconRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.alert-text {
+    font-size: clamp(1.4rem, 2.4vw, 2.4rem);
+    color: var(--text-secondary);
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+}
+
+.alert-prayer-name {
+    font-size: clamp(4rem, 8.5vw, 7.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #ffffff 40%, #c2c2c9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+}
+
+.alert-bismillah {
+    font-family: 'Amiri', serif;
+    font-size: clamp(1.6rem, 3vw, 3.2rem);
+    color: var(--text-primary);
+    opacity: 0.85;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* Iqamah Section in Overlay */
+.iqamah-countdown-section {
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: inline-block;
+    min-width: clamp(280px, 35vw, 550px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.02);
+}
+
+.iqamah-divider {
+    width: 80px;
+    height: 2px;
+    background: var(--accent-emerald);
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 8px var(--accent-emerald);
+}
+
+.iqamah-label-big {
+    font-size: clamp(0.8rem, 1.1vw, 1.1rem);
+    color: var(--text-secondary);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}
+
+.iqamah-countdown-big {
+    font-size: clamp(4.5rem, 11vw, 9.5rem);
+    font-weight: 200;
+    color: var(--accent-emerald);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 25px rgba(48, 209, 88, 0.35);
+}
+
+/* Critical/Urgent Countdowns (Last 60 seconds - pulse red) */
+.iqamah-countdown-big.urgent {
+    color: var(--accent-red);
+    font-weight: 300;
+    text-shadow: 0 0 25px rgba(255, 69, 58, 0.55);
+    animation: urgentBlink 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes urgentBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+.iqamah-time-label {
+    font-size: clamp(0.85rem, 1.1vw, 1.25rem);
+    color: var(--text-tertiary);
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================
+   ===== Jumu'ah Friday Theme Customization =====
+   ========================================================== */
+body.jummah-mode .header {
+    border-color: rgba(255, 214, 10, 0.25);
+    box-shadow: 0 0 45px rgba(255, 214, 10, 0.08), inset 0 1px 1px rgba(255,255,255,0.02);
+}
+
+body.jummah-mode .mosque-name {
+    background: linear-gradient(180deg, var(--accent-gold) 30%, var(--accent-orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+body.jummah-mode .jummah-info {
+    color: var(--accent-gold);
+    background: rgba(255, 214, 10, 0.05);
+    border-color: rgba(255, 214, 10, 0.15);
+}
+
+body.jummah-mode .jummah-info strong {
+    color: var(--text-primary);
+}
+
+.jummah-countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    color: var(--accent-gold);
+    text-shadow: 0 0 8px rgba(255, 214, 10, 0.25);
+}
+
+/* ==========================================================
+   ===== Fullscreen Kiosk Mode Toggle Button =====
+   ========================================================== */
+.fullscreen-btn {
+    position: fixed;
+    bottom: 2.2vw;
+    right: 2.2vw;
+    z-index: 500;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: var(--text-tertiary);
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    opacity: 0.25;
+}
+
+.fullscreen-btn:hover {
+    opacity: 1;
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    transform: scale(1.08);
+    box-shadow: 0 4px 15px rgba(10, 132, 255, 0.2), inset 0 1px 1px rgba(255,255,255,0.05);
+}
+
+/* ==========================================================
+   ===== Responsive Adaptations =====
+   ========================================================== */
+@media (max-width: 1024px) {
+    .prayer-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    .clock-section {
+        flex-direction: column;
+        gap: 3vh;
+        padding: 2vh 0;
+    }
+    .hero-divider {
+        width: 60%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+    }
+    .header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 15px 20px;
+    }
+    .header-left, .header-right {
+        align-items: center;
+        text-align: center;
+    }
+    .notice-board-container {
+        height: auto;
+        padding: 12px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .notice-text-wrap {
+        width: 100%;
+        height: auto;
+    }
+    .main-container {
+        height: auto;
+        overflow-y: auto;
+        padding: 20px;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .prayer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .hero-hours, .hero-minutes {
+        font-size: 5rem;
+    }
+    .hero-colon {
+        font-size: 4rem;
+    }
+    .next-prayer-name {
+        font-size: 2.2rem;
+    }
+    .countdown {
+        font-size: 1.5rem;
+    }
+    .iqamah-countdown-section {
+        min-width: 90vw;
+        padding: 1.5rem;
+    }
+}

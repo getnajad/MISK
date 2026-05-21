@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zakariya Juma Masjid - Prayer Times</title>
+    <meta name="description" content="Live prayer times and clock display for Zakariya Juma Masjid, Thana, Kannur">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=10">
+</head>
+<body>
+    <!-- Apple Weather-Style Animated Canvas Background -->
+    <canvas id="weatherCanvas"></canvas>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Top Bar - Mosque Name & Dates -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <div class="hijri-date" id="hijriDate"></div>
+                <div class="arabic-day" id="arabicDay"></div>
+            </div>
+            <div class="header-center">
+                <div class="mosque-icon">
+                    <svg viewBox="0 0 100 80" fill="currentColor" class="mosque-svg">
+                        <!-- Dome -->
+                        <path d="M50 5 C30 5 20 25 20 35 L80 35 C80 25 70 5 50 5Z" opacity="0.9"/>
+                        <!-- Crescent on dome -->
+                        <circle cx="50" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M48 4 C51 4 53 6 53 9 C53 6 51 5 48 4Z"/>
+                        <!-- Main body -->
+                        <rect x="18" y="35" width="64" height="35" rx="2"/>
+                        <!-- Door -->
+                        <path d="M42 70 L42 50 C42 45 58 45 58 50 L58 70Z" fill="rgba(0,0,0,0.3)"/>
+                        <!-- Windows -->
+                        <path d="M25 42 C25 39 33 39 33 42 L33 52 L25 52Z" fill="rgba(0,0,0,0.2)"/>
+                        <path d="M67 42 C67 39 75 39 75 42 L75 52 L67 52Z" fill="rgba(0,0,0,0.2)"/>
+                        <!-- Minarets -->
+                        <rect x="8" y="20" width="8" height="50" rx="1"/>
+                        <rect x="84" y="20" width="8" height="50" rx="1"/>
+                        <path d="M12 20 C9 20 8 12 12 8 C16 12 15 20 12 20Z"/>
+                        <path d="M88 20 C85 20 84 12 88 8 C92 12 91 20 88 20Z"/>
+                    </svg>
+                </div>
+                <h1 class="mosque-name">Zakariya Juma Masjid</h1>
+                <p class="mosque-location">Thana, Kannur, Kerala</p>
+            </div>
+            <div class="header-right">
+                <div class="gregorian-date" id="gregorianDate"></div>
+                <div class="weather-widget" id="weatherWidget">
+                    <span class="weather-icon" id="weatherIcon"></span>
+                    <span class="weather-temp" id="weatherTemp"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Clock Section — Apple Hero Typography -->
+        <section class="clock-section" id="clockSection">
+            <div class="hero-clock">
+                <div class="hero-time-row">
+                    <span class="hero-hours" id="heroHours">00</span>
+                    <span class="hero-colon" id="heroColon">:</span>
+                    <span class="hero-minutes" id="heroMinutes">00</span>
+                    <div class="hero-side">
+                        <span class="hero-seconds" id="heroSeconds">00</span>
+                        <span class="hero-period" id="heroPeriod">AM</span>
+                    </div>
+                </div>
+                <div class="hero-progress-bar">
+                    <div class="hero-progress-fill" id="heroProgressFill"></div>
+                </div>
+            </div>
+            <div class="hero-divider"></div>
+            <div class="next-prayer-info">
+                <div class="next-label">NEXT AZAN</div>
+                <div class="next-prayer-name" id="nextPrayerName">—</div>
+                <div class="countdown" id="countdown">--:--:--</div>
+            </div>
+        </section>
+
+        <!-- Prayer Times Grid -->
+        <section class="prayer-grid" id="prayerGrid">
+            <div class="prayer-card" data-prayer="fajr" id="card-fajr">
+                <div class="card-glow"></div>
+                <div class="prayer-icon">🌙</div>
+                <div class="prayer-name-ar">الفجر</div>
+                <div class="prayer-name-en">Fajr</div>
+                <div class="prayer-times-row">
+                    <div class="time-col">
+                        <span class="time-label">AZAN</span>
+                        <span class="prayer-time" id="time-fajr">--:--</span>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="time-col">
+                        <span class="time-label iqama-label-card">IQAMAH</span>
+                        <span class="prayer-time iqama-time-card" id="iqama-fajr">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-status" id="status-fajr"></div>
+            </div>
+            <div class="prayer-card" data-prayer="sunrise" id="card-sunrise">
+                <div class="card-glow"></div>
+                <div class="prayer-icon">🌅</div>
+                <div class="prayer-name-ar">الشروق</div>
+                <div class="prayer-name-en">Sunrise</div>
+                <div class="prayer-times-row single">
+                    <div class="time-col">
+                        <span class="prayer-time" id="time-sunrise">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-status" id="status-sunrise"></div>
+            </div>
+            <div class="prayer-card" data-prayer="dhuhr" id="card-dhuhr">
+                <div class="card-glow"></div>
+                <div class="prayer-icon">☀️</div>
+                <div class="prayer-name-ar">الظهر</div>
+                <div class="prayer-name-en">Dhuhr</div>
+                <div class="prayer-times-row">
+                    <div class="time-col">
+                        <span class="time-label">AZAN</span>
+                        <span class="prayer-time" id="time-dhuhr">--:--</span>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="time-col">
+                        <span class="time-label iqama-label-card">IQAMAH</span>
+                        <span class="prayer-time iqama-time-card" id="iqama-dhuhr">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-status" id="status-dhuhr"></div>
+            </div>
+            <div class="prayer-card" data-prayer="asr" id="card-asr">
+                <div class="card-glow"></div>
+                <div class="prayer-icon">🌤️</div>
+                <div class="prayer-name-ar">العصر</div>
+                <div class="prayer-name-en">Asr</div>
+                <div class="prayer-times-row">
+                    <div class="time-col">
+                        <span class="time-label">AZAN</span>
+                        <span class="prayer-time" id="time-asr">--:--</span>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="time-col">
+                        <span class="time-label iqama-label-card">IQAMAH</span>
+                        <span class="prayer-time iqama-time-card" id="iqama-asr">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-status" id="status-asr"></div>
+            </div>
+            <div class="prayer-card" data-prayer="maghrib" id="card-maghrib">
+                <div class="card-glow"></div>
+                <div class="prayer-icon">🌇</div>
+                <div class="prayer-name-ar">المغرب</div>
+                <div class="prayer-name-en">Maghrib</div>
+                <div class="prayer-times-row">
+                    <div class="time-col">
+                        <span class="time-label">AZAN</span>
+                        <span class="prayer-time" id="time-maghrib">--:--</span>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="time-col">
+                        <span class="time-label iqama-label-card">IQAMAH</span>
+                        <span class="prayer-time iqama-time-card" id="iqama-maghrib">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-status" id="status-maghrib"></div>
+            </div>
+            <div class="prayer-card" data-prayer="isha" id="card-isha">
+                <div class="card-glow"></div>
+                <div class="prayer-icon">🌃</div>
+                <div class="prayer-name-ar">العشاء</div>
+                <div class="prayer-name-en">Isha</div>
+                <div class="prayer-times-row">
+                    <div class="time-col">
+                        <span class="time-label">AZAN</span>
+                        <span class="prayer-time" id="time-isha">--:--</span>
+                    </div>
+                    <div class="time-divider"></div>
+                    <div class="time-col">
+                        <span class="time-label iqama-label-card">IQAMAH</span>
+                        <span class="prayer-time iqama-time-card" id="iqama-isha">--:--</span>
+                    </div>
+                </div>
+                <div class="prayer-status" id="status-isha"></div>
+            </div>
+        </section>
+
+        <!-- Premium Glassmorphic Notice Board -->
+        <div class="notice-board-container">
+            <div class="notice-badge">
+                <span class="notice-pulse"></span>
+                <span class="notice-icon">📢</span>
+                <span class="notice-title">Notice:</span>
+            </div>
+            <div class="notice-text-wrap">
+                <span class="notice-message" id="noticeMessage">Zakariya Juma Masjid Thana Notice Board - അറിയിപ്പുകൾ ഇവിടെ കാണാം.</span>
+            </div>
+            <a href="admin.html" class="admin-cog-btn" title="Open Admin Panel">⚙️</a>
+        </div>
+    </div>
+
+    <!-- Prayer Alert Overlay — Azan + Iqamah Countdown -->
+    <div class="prayer-alert-overlay" id="prayerAlertOverlay">
+        <div class="alert-content">
+            <div class="alert-icon">☪</div>
+            <div class="alert-text" id="alertText">It's time for</div>
+            <div class="alert-prayer-name" id="alertPrayerName"></div>
+            <div class="alert-bismillah">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
+            <div class="iqamah-countdown-section" id="iqamahSection">
+                <div class="iqamah-divider"></div>
+                <div class="iqamah-label-big">IQAMAH IN</div>
+                <div class="iqamah-countdown-big" id="iqamahCountdownBig">--:--</div>
+                <div class="iqamah-time-label" id="iqamahTimeLabel"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Toggle -->
+    <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Fullscreen">⛶</button>
+
+    <script src="weather-canvas.js?v=10"></script>
+    <script src="app.js?v=10"></script>
+</body>
+</html>
