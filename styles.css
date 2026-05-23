@@ -557,16 +557,20 @@ body::before {
 }
 
 /* Times Layout inside complication */
+
+
+/* Times Layout inside complication (Stacked Vertically for Maximum Distance Legibility) */
 .prayer-times-row {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: clamp(8px, 0.8vw, 14px);
-    margin-top: 6px;
-    background: rgba(0,0,0,0.18);
-    padding: 8px 6px;
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255,255,255,0.02);
+    gap: 8px;
+    margin-top: 8px;
+    background: rgba(0, 0, 0, 0.28); /* Darkened container backdrop to pop white/neon text */
+    padding: 14px 8px;
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .prayer-times-row.single {
@@ -580,46 +584,50 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
-    flex: 1;
+    gap: 4px;
+    width: 100%;
     min-width: 0;
 }
 
 .time-label {
-    font-size: clamp(0.5rem, 0.7vw, 0.8rem);
+    font-size: clamp(0.6rem, 0.8vw, 0.9rem);
     color: var(--text-tertiary);
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .prayer-time {
-    font-size: clamp(1.35rem, 2vw, 2.25rem); /* Substantially larger for distant visibility! */
-    font-weight: 700;
-    color: var(--text-primary);
+    font-size: clamp(1.9rem, 2.9vw, 3.4rem) !important; /* Boosted nearly 2x for miles of legibility! */
+    font-weight: 800;
+    color: #ffffff; /* Pure Solid White - Infinite contrast! */
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
     transition: var(--transition-smooth);
+    line-height: 1;
 }
 
 /* Dual Column Highlight for Iqamah */
 .iqama-label-card {
-    color: var(--accent-emerald) !important;
-    opacity: 0.9;
+    color: #00ff99 !important; /* Brighter neon mint for long range visibility! */
+    opacity: 0.95;
+    text-shadow: 0 0 8px rgba(0, 255, 153, 0.15);
 }
 
 .iqama-time-card {
-    font-size: clamp(1.2rem, 1.75vw, 1.95rem) !important; /* Elegant visual hierarchy, slightly smaller than Azan */
-    color: var(--accent-emerald) !important;
-    font-weight: 700 !important;
-    text-shadow: 0 0 10px rgba(48, 209, 88, 0.15);
+    font-size: clamp(1.9rem, 2.9vw, 3.4rem) !important; /* Same massive readability as Azan */
+    color: #00ff99 !important; /* Brighter neon mint for perfect LCD contrast */
+    font-weight: 800 !important;
+    text-shadow: 0 0 15px rgba(0, 255, 153, 0.25), 0 4px 15px rgba(0,0,0,0.45);
 }
 
 .time-divider {
-    width: 1px;
-    height: 24px;
-    background: rgba(255, 255, 255, 0.08);
+    width: 75%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08); /* Horizontal separators instead of vertical */
     flex-shrink: 0;
+    margin: 4px 0;
 }
 
 .prayer-status {
