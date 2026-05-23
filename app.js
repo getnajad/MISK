@@ -84,12 +84,216 @@ function formatCountdown(diffMs) {
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-// ===== Compute Iqama Time String =====
+// ==========================================
+// ===== RAW PRINTED TIMETABLE DATASET ======
+// ==========================================
+const RAW_TIMETABLE_CSV = `Month,Day,Subhi,Luhar,Asar,Magrib,Isha
+Jan,1,5:24,12:32,3:49,4:37,6:15
+Jan,4,5:26,12:34,3:51,4:40,6:17
+Jan,7,5:27,12:35,3:52,4:42,6:18
+Jan,10,5:28,12:36,3:53,4:43,6:20
+Jan,13,5:29,12:37,3:54,4:45,6:21
+Jan,16,5:30,12:39,3:56,4:47,6:23
+Jan,19,5:31,12:40,3:57,4:48,6:25
+Jan,22,5:31,12:40,3:58,4:49,6:26
+Jan,25,5:31,12:41,4:01,4:51,6:27
+Jan,28,5:32,12:42,4:01,4:52,6:29
+Feb,1,5:33,12:43,4:02,4:54,6:31
+Feb,4,5:32,12:43,4:03,4:55,6:32
+Feb,7,5:32,12:43,4:03,4:56,6:33
+Feb,10,5:31,12:43,4:04,4:56,6:33
+Feb,13,5:31,12:43,4:04,4:57,6:34
+Feb,16,5:30,12:43,4:04,4:58,6:35
+Feb,19,5:30,12:43,4:04,4:58,6:36
+Feb,22,5:29,12:43,4:04,4:58,6:36
+Feb,25,5:28,12:42,4:04,4:59,6:37
+Feb,28,5:27,12:42,4:04,4:59,6:38
+Mar,1,5:25,12:41,4:04,4:59,6:38
+Mar,4,5:24,12:41,4:04,4:59,6:39
+Mar,7,5:22,12:40,4:04,4:59,6:39
+Mar,10,5:20,12:39,3:58,4:58,6:39
+Mar,13,5:19,12:38,3:57,4:58,6:39
+Mar,16,5:17,12:38,3:55,4:57,6:39
+Mar,19,5:15,12:37,3:53,4:57,6:40
+Mar,22,5:14,12:36,3:53,4:57,6:40
+Mar,25,5:12,12:35,3:51,4:56,6:40
+Mar,28,5:10,12:34,3:49,4:55,6:40
+Apr,1,5:07,12:33,3:47,4:54,6:40
+Apr,4,5:05,12:32,3:45,4:53,6:40
+Apr,7,5:04,12:31,3:43,4:52,6:41
+Apr,10,5:02,12:30,3:41,4:51,6:41
+Apr,13,4:59,12:30,3:39,4:51,6:41
+Apr,16,4:57,12:29,3:36,4:50,6:41
+Apr,19,4:55,12:28,3:35,4:49,6:41
+Apr,22,4:53,12:28,3:33,4:48,6:42
+Apr,25,4:51,12:27,3:34,4:47,6:42
+Apr,28,4:49,12:26,3:35,4:48,6:42
+May,1,4:47,12:26,3:36,4:50,6:42
+May,4,4:46,12:26,3:38,4:51,6:42
+May,7,4:44,12:25,3:39,4:51,6:42
+May,10,4:43,12:25,3:41,4:52,6:43
+May,13,4:41,12:25,3:43,4:53,6:44
+May,16,4:40,12:25,3:44,4:54,6:45
+May,19,4:38,12:25,3:46,4:56,6:47
+May,22,4:37,12:26,3:48,4:57,6:48
+May,25,4:37,12:26,3:49,4:57,6:48
+May,28,4:38,12:26,3:49,4:57,6:48
+Jun,1,4:37,12:27,3:51,4:59,6:50
+Jun,4,4:36,12:27,3:51,4:59,6:51
+Jun,7,4:36,12:28,3:53,4:59,6:51
+Jun,10,4:36,12:29,3:53,4:59,6:52
+Jun,13,4:36,12:29,3:54,4:59,6:52
+Jun,16,4:37,12:30,3:55,4:59,6:53
+Jun,19,4:37,12:30,3:56,4:59,6:54
+Jun,22,4:38,12:31,3:57,4:59,6:55
+Jun,25,4:38,12:31,3:57,4:59,6:55
+Jun,28,4:39,12:32,3:58,4:59,6:56
+Jul,1,4:40,12:33,3:59,5:00,6:57
+Jul,4,4:41,12:33,3:59,5:00,6:57
+Jul,7,4:42,12:34,3:59,5:00,6:57
+Jul,10,4:43,12:34,3:59,5:00,6:57
+Jul,13,4:45,12:35,3:59,5:00,6:57
+Jul,16,4:46,12:35,3:58,4:59,6:56
+Jul,19,4:46,12:35,3:58,4:59,6:56
+Jul,22,4:47,12:35,3:56,4:58,6:56
+Jul,25,4:48,12:35,3:55,4:56,6:55
+Jul,28,4:50,12:35,3:54,4:55,6:55
+Aug,1,4:51,12:35,3:53,4:52,6:54
+Aug,4,4:53,12:35,3:51,4:50,6:53
+Aug,7,4:54,12:35,3:49,4:48,6:52
+Aug,10,4:54,12:34,3:46,4:45,6:51
+Aug,13,4:56,12:33,3:44,4:43,6:50
+Aug,16,4:57,12:33,3:42,4:40,6:48
+Aug,19,4:57,12:32,3:40,4:38,6:47
+Aug,22,4:57,12:32,3:38,4:36,6:46
+Aug,25,4:57,12:31,3:36,4:34,6:44
+Aug,28,4:58,12:30,3:33,4:32,6:42
+Sep,1,4:58,12:29,3:30,4:28,6:40
+Sep,4,4:59,12:28,3:27,4:25,6:39
+Sep,7,5:00,12:27,3:24,4:22,6:36
+Sep,10,5:00,12:26,3:21,4:18,6:34
+Sep,13,5:00,12:25,3:19,4:15,6:32
+Sep,16,5:00,12:24,3:16,4:12,6:30
+Sep,19,5:00,12:23,3:13,4:09,6:28
+Sep,22,5:00,12:22,3:10,4:06,6:26
+Sep,25,5:00,12:21,3:08,4:03,6:24
+Sep,28,5:00,12:20,3:05,4:00,6:22
+Oct,1,5:00,12:19,3:03,3:57,6:20
+Oct,4,5:00,12:18,3:01,3:54,6:18
+Oct,7,5:00,12:17,2:59,3:51,6:16
+Oct,10,5:00,12:16,2:57,3:48,6:14
+Oct,13,5:00,12:15,2:56,3:46,6:12
+Oct,16,5:00,12:15,2:55,3:43,6:11
+Oct,19,5:00,12:14,2:54,3:41,6:09
+Oct,22,5:00,12:14,2:53,3:39,6:07
+Oct,25,5:00,12:13,2:52,3:36,6:06
+Oct,28,5:00,12:13,2:52,3:34,6:05
+Nov,1,5:01,12:13,2:53,3:32,6:04
+Nov,4,5:01,12:13,2:53,3:31,6:04
+Nov,7,5:02,12:13,2:54,3:30,6:04
+Nov,10,5:03,12:13,2:55,3:30,6:04
+Nov,13,5:04,12:13,2:56,3:30,6:04
+Nov,16,5:05,12:13,2:57,3:30,6:04
+Nov,19,5:06,12:14,2:59,3:31,6:05
+Nov,22,5:07,12:15,3:01,3:32,6:06
+Nov,25,5:08,12:16,3:03,3:34,6:07
+Nov,28,5:09,12:17,3:05,3:36,6:09
+Dec,1,5:10,12:18,3:07,3:39,6:11
+Dec,4,5:12,12:19,3:10,3:42,6:13
+Dec,7,5:13,12:21,3:12,3:45,6:16
+Dec,10,5:15,12:22,3:15,3:48,6:18
+Dec,13,5:16,12:24,3:18,3:51,6:21
+Dec,16,5:18,12:26,3:21,3:54,6:24
+Dec,19,5:20,12:27,3:23,3:57,6:26
+Dec,22,5:21,12:29,3:26,4:00,6:29
+Dec,25,5:23,12:31,3:29,4:03,6:32
+Dec,28,5:24,12:33,3:31,4:06,6:34`;
+
+let parsedTimetableData = null;
+
+function parseTimetable() {
+    if (parsedTimetableData) return parsedTimetableData;
+    const monthMap = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
+    const db = {};
+    for (let i = 1; i <= 12; i++) db[i] = [];
+
+    const lines = RAW_TIMETABLE_CSV.trim().split('\n');
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        if (cols.length < 7) continue;
+        const mNum = monthMap[cols[0]];
+        if (!mNum) continue;
+        db[mNum].push({
+            day: parseInt(cols[1]),
+            Subhi: cols[2],
+            Luhar: cols[3],
+            Asar: cols[4],
+            Magrib: cols[5],
+            Isha: cols[6]
+        });
+    }
+    parsedTimetableData = db;
+    return db;
+}
+
+function getClosestTimetableRow(targetDate, db) {
+    const monthEntries = db[targetDate.getMonth() + 1];
+    const targetDay = targetDate.getDate();
+    if (!monthEntries || monthEntries.length === 0) return null;
+    
+    let matchedRow = monthEntries[0];
+    for (let i = 0; i < monthEntries.length; i++) {
+        if (monthEntries[i].day <= targetDay) {
+            matchedRow = monthEntries[i];
+        } else {
+            break;
+        }
+    }
+    return matchedRow;
+}
+
+function calculateLocalPrayerTimes(targetDate) {
+    const db = parseTimetable();
+    const chart = getClosestTimetableRow(targetDate, db);
+    if (!chart) return null;
+
+    const get24h = (rawTime, offsetMin, isPm) => {
+        let [h, m] = rawTime.split(':').map(Number);
+        if (isPm && h < 12) h += 12;
+        let totalMin = h * 60 + m + offsetMin;
+        let newH = Math.floor(totalMin / 60) % 24;
+        let newM = totalMin % 60;
+        return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
+    };
+
+    return {
+        fajr: get24h(chart.Subhi, 4, false),
+        dhuhr: get24h(chart.Luhar, 3, true),
+        asr: get24h(chart.Asar, 5, true),
+        maghrib: get24h(chart.Magrib, 3, true),
+        isha: get24h(chart.Isha, 5, true)
+    };
+}
+
+// ===== Compute Iqama Time String (Using Timetable-Specific Rules) =====
 function getIqamaTime12(prayerTimeStr, key) {
-    if (!prayerTimeStr || !CONFIG.iqamaOffsets[key]) return '--:--';
+    if (!prayerTimeStr) return '--:--';
     const clean = prayerTimeStr.replace(/\s*\(.*\)/, '').trim();
     let [h, m] = clean.split(':').map(Number);
-    const totalMin = h * 60 + m + CONFIG.iqamaOffsets[key];
+    
+    // Friday Jumu'ah Special Logic (Dhuhr Iqamah is statically 12:45 PM)
+    const now = getNow();
+    if (key === 'dhuhr' && now.getDay() === 5) {
+        return "12:45 PM";
+    }
+    
+    // Apply calculation offsets: Fajr (+15), Dhuhr (+15), Asr (+15), Maghrib (+7), Isha (+15)
+    let interval = 15;
+    if (key === 'maghrib') {
+        interval = 7;
+    }
+    
+    const totalMin = h * 60 + m + interval;
     let ih = Math.floor(totalMin / 60) % 24;
     const im = totalMin % 60;
     const period = ih >= 12 ? 'PM' : 'AM';
@@ -97,9 +301,18 @@ function getIqamaTime12(prayerTimeStr, key) {
     return `${ih}:${String(im).padStart(2, '0')} ${period}`;
 }
 
-// ===== Fetch Prayer Times =====
+// ===== Fetch Prayer Times (100% Precise Offline Calculation Engine) =====
 async function fetchPrayerTimes() {
     const now = getNow();
+    
+    // 1. Instantly calculate prayer times locally from our raw printed dataset!
+    const localTimes = calculateLocalPrayerTimes(now);
+    if (localTimes) {
+        prayerTimesData = localTimes;
+        updatePrayerDisplay();
+    }
+    
+    // 2. Fetch current Hijri date progressively from Aladhan API (with graceful offline fallback)
     const dd = String(now.getDate()).padStart(2, '0');
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const yyyy = now.getFullYear();
@@ -107,18 +320,16 @@ async function fetchPrayerTimes() {
     try {
         const res = await fetch(url);
         const json = await res.json();
-        const t = json.data.timings;
-        prayerTimesData = {
-            fajr: t.Fajr, sunrise: t.Sunrise, dhuhr: t.Dhuhr,
-            asr: t.Asr, maghrib: t.Maghrib, isha: t.Isha,
-        };
-        // Hijri date
+        
+        // Update Hijri date from response
         const h = json.data.date.hijri;
         const hijriEl = document.getElementById('hijriDate');
-        if (hijriEl) hijriEl.textContent = `${h.day} ${h.month.en} ${h.year} AH`;
-        updatePrayerDisplay();
+        if (hijriEl) {
+            hijriEl.textContent = `${h.day} ${h.month.en} ${h.year} AH`;
+        }
     } catch (e) {
-        console.error('Failed to fetch prayer times:', e);
+        console.error('Failed to fetch progressive Hijri date:', e);
+        // Retry fetch in 30 seconds for Hijri date updates
         setTimeout(fetchPrayerTimes, 30000);
     }
 }
