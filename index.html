@@ -100,18 +100,6 @@
                 </div>
                 <div class="prayer-status" id="status-fajr"></div>
             </div>
-            <div class="prayer-card" data-prayer="sunrise" id="card-sunrise">
-                <div class="card-glow"></div>
-                <div class="prayer-icon">🌅</div>
-                <div class="prayer-name-ar">الشروق</div>
-                <div class="prayer-name-en">Sunrise</div>
-                <div class="prayer-times-row single">
-                    <div class="time-col">
-                        <span class="prayer-time" id="time-sunrise">--:--</span>
-                    </div>
-                </div>
-                <div class="prayer-status" id="status-sunrise"></div>
-            </div>
             <div class="prayer-card" data-prayer="dhuhr" id="card-dhuhr">
                 <div class="card-glow"></div>
                 <div class="prayer-icon">☀️</div>
@@ -190,8 +178,7 @@
         <div class="notice-board-container">
             <div class="notice-badge">
                 <span class="notice-pulse"></span>
-                <span class="notice-icon">📢</span>
-                <span class="notice-title">Notice:</span>
+                <span class="notice-title">അറിയിപ്പ്</span>
             </div>
             <div class="notice-text-wrap">
                 <span class="notice-message" id="noticeMessage">Zakariya Juma Masjid Thana Notice Board - അറിയിപ്പുകൾ ഇവിടെ കാണാം.</span>
@@ -213,6 +200,22 @@
                 <div class="iqamah-countdown-big" id="iqamahCountdownBig">--:--</div>
                 <div class="iqamah-time-label" id="iqamahTimeLabel"></div>
             </div>
+        </div>
+    <!-- Distraction-Free Prayer Silence Overlay (Mutes Screen During Active Congregation) -->
+    <div class="prayer-silence-overlay" id="prayerSilenceOverlay">
+        <div class="silence-content">
+            <div class="silence-icon-wrapper">
+                <svg class="silence-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <rect x="5" y="2" width="14" height="20" rx="3" />
+                    <line x1="10" y1="5" x2="14" y2="5" />
+                    <circle cx="12" cy="19" r="1" />
+                    <line class="slash-line" x1="2" y1="2" x2="22" y2="22" stroke="#ff453a" stroke-width="2" />
+                </svg>
+            </div>
+            <div class="silence-title">ദയവായി മൊബൈൽ ഫോണുകൾ സൈലന്റിലാക്കുക</div>
+            <div class="silence-subtitle">PLEASE PUT YOUR MOBILE PHONE ON SILENT</div>
+            <div class="silence-prayer-name" id="silencePrayerName">CONGREGATION IN PROGRESS</div>
+            <div class="silence-footer">Screen will return shortly after prayer concludes</div>
         </div>
     </div>
 

@@ -8,15 +8,16 @@ const CONFIG = {
     iqamaOffsets: { fajr: 15, dhuhr: 10, asr: 10, maghrib: 5, isha: 10 },
     jummahTime: '12:30 PM',
     alertDurationMs: 60000,
+    prayerSilenceMinutes: 15, // Screen goes silent/empty for 15 minutes once prayer starts
 };
 
-const PRAYER_KEYS = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
-const PRAYER_LABELS = { fajr: 'Fajr', sunrise: 'Sunrise', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
+const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+const PRAYER_LABELS = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' };
 
 let prayerTimesData = {};
 let lastAlertedPrayer = '';
-let currentWeatherCode = 0;
-let rainInterval = null;
+let activeSilenceKey = null;
+let silenceEndTime = null;
 
 // ===== Initialize Stars (subtle, Apple-style dots) =====
 function createStars() {
@@ -211,40 +212,14 @@ function updateNextPrayerInfo() {
     updateIqamaCountdown(next.key, target);
 }
 
-// ===== Update Clock =====
-function updateClock() {
-    const now = getNow();
-    let h = now.getHours();
-    const m = now.getMinutes();
-    const s = now.getSeconds();
-    const period = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-
-    const hoursEl = document.getElementById('heroHours');
-    const minutesEl = document.getElementById('heroMinutes');
-    const secEl = document.getElementById('heroSeconds');
-    const perEl = document.getElementById('heroPeriod');
-
-    if (hoursEl) hoursEl.textContent = String(h).padStart(2, '0');
-    if (minutesEl) minutesEl.textContent = String(m).padStart(2, '0');
-    if (secEl) secEl.textContent = String(s).padStart(2, '0');
-    if (perEl) perEl.textContent = period;
-
-    // Update progress bar of the minute
-    const progressFill = document.getElementById('heroProgressFill');
-    if (progressFill) {
-        const progressPercent = (s / 60) * 100;
-        progressFill.style.width = `${progressPercent}%`;
-    }
-}
-
-// ===== Update Gregorian Date =====
-function updateGregorianDate() {
-    const el = document.getElementById('gregorianDate');
-    if (!el) return;
-    const now = getNow();
-    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    el.textContent = now.toLocaleDateString('en-US', opts);
+// ===== Ring Progress =====
+function updateRingProgress(diffMs) {
+    const ring = document.getElementById('ringProgress');
+    if (!ring) return;
+    const circumference = 2 * Math.PI * 140;
+    const totalSpanMs = 6 * 60 * 60 * 1000;
+    const progress = Math.max(0, Math.min(1, 1 - diffMs / totalSpanMs));
+    ring.style.strokeDashoffset = circumference * (1 - progress);
 }
 
 // ===== Footer Iqama Time =====
@@ -297,6 +272,8 @@ let activeAlertKey = null;
 let iqamahTargetTime = null;
 
 function checkPrayerAlert() {
+    if (activeSilenceKey) return; // Prevent alerts during silence/prayer mode
+
     const now = getNow();
     const nowMin = now.getHours() * 60 + now.getMinutes();
     const alertPrayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -306,8 +283,10 @@ function checkPrayerAlert() {
         const diff = iqamahTargetTime.getTime() - now.getTime();
         updateBigIqamahCountdown(diff);
         if (diff <= 0) {
-            // Iqamah time reached — dismiss after a short delay
-            setTimeout(() => hideAlert(), 3000);
+            // Iqamah time reached — transition immediately to distraction-free prayer mode!
+            const key = activeAlertKey;
+            hideAlert();
+            showPrayerSilence(key);
         }
         return;
     }
@@ -396,9 +375,70 @@ function hideAlert() {
     if (el) el.classList.remove('urgent');
 }
 
+// ===== Distraction-Free Prayer Silence Handlers =====
+function showPrayerSilence(key) {
+    activeSilenceKey = key;
+    const now = getNow();
+    silenceEndTime = new Date(now.getTime() + CONFIG.prayerSilenceMinutes * 60 * 1000);
 
+    const overlay = document.getElementById('prayerSilenceOverlay');
+    const label = document.getElementById('silencePrayerName');
+    
+    if (label) {
+        const prayerName = PRAYER_LABELS[key] ? PRAYER_LABELS[key].toUpperCase() : key.toUpperCase();
+        label.textContent = `${prayerName} CONGREGATION IN PROGRESS`;
+    }
+    
+    if (overlay) {
+        overlay.classList.add('active');
+    }
+}
 
-// ===== Dynamic Sky Background & Weather Effects =====
+function checkPrayerSilence() {
+    if (!activeSilenceKey || !silenceEndTime) return;
+    const now = getNow();
+    if (now.getTime() >= silenceEndTime.getTime()) {
+        hidePrayerSilence();
+    }
+}
+
+function hidePrayerSilence() {
+    const overlay = document.getElementById('prayerSilenceOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+    }
+    activeSilenceKey = null;
+    silenceEndTime = null;
+}
+
+// ===== Update Clock =====
+function updateClock() {
+    const now = getNow();
+    let h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const period = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+
+    const timeEl = document.getElementById('currentTime');
+    const secEl = document.getElementById('currentSeconds');
+    const perEl = document.getElementById('timePeriod');
+
+    if (timeEl) timeEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    if (secEl) secEl.textContent = String(s).padStart(2, '0');
+    if (perEl) perEl.textContent = period;
+}
+
+// ===== Update Gregorian Date =====
+function updateGregorianDate() {
+    const el = document.getElementById('gregorianDate');
+    if (!el) return;
+    const now = getNow();
+    const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    el.textContent = now.toLocaleDateString('en-US', opts);
+}
+
+// ===== Dynamic Sky Background =====
 function updateSky() {
     const now = getNow();
     const h = now.getHours();
@@ -412,60 +452,51 @@ function updateSky() {
     const maghribH = maghribMin / 60 || 18.5;
 
     let sky;
-    if (t < sunriseH - 1)         sky = 'night';
-    else if (t < sunriseH)        sky = 'dawn';
-    else if (t < sunriseH + 1.5)  sky = 'morning';
-    else if (t < maghribH - 1.5)  sky = 'day';
-    else if (t < maghribH - 0.5)  sky = 'golden';
-    else if (t < maghribH + 0.5)  sky = 'dusk';
-    else                          sky = 'night';
+    if (t < sunriseH - 1) sky = 'night';
+    else if (t < sunriseH) sky = 'dawn';
+    else if (t < sunriseH + 1.5) sky = 'morning';
+    else if (t < maghribH - 1.5) sky = 'day';
+    else if (t < maghribH - 0.5) sky = 'golden';
+    else if (t < maghribH + 0.5) sky = 'dusk';
+    else sky = 'night';
 
-    // Weather Determination based on OpenMeteo code
-    let weather = 'clear';
-    const c = currentWeatherCode;
-    
-    if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95) {
-        weather = 'rainy';
-    } else if (c >= 1 && c <= 48) {
-        weather = 'cloudy';
-    } else {
-        weather = 'clear';
-    }
-
-    // Drive the canvas engine
-    if (typeof WeatherCanvas !== 'undefined') {
-        WeatherCanvas.setSky(sky);
-        WeatherCanvas.setWeather(weather);
-    }
     document.body.setAttribute('data-sky', sky);
-    document.body.setAttribute('data-weather', weather);
 }
 
-// ===== Masjid Notice Board Manager =====
-function initNoticeBoard() {
-    const noticeMessage = document.getElementById('noticeMessage');
-    if (!noticeMessage) return;
+// ===== Hadith / Verse Ticker =====
+const TICKER_ITEMS = [
+    { ar: 'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا', en: '"Indeed, prayer has been decreed upon the believers at specified times." — Quran 4:103' },
+    { ar: 'خَيْرُ صُفُوفِ الرِّجَالِ أَوَّلُهَا', en: '"The best rows for men are the first rows." — Sahih Muslim' },
+    { ar: 'مَنْ بَنَى مَسْجِدًا لِلَّهِ بَنَى اللَّهُ لَهُ مِثْلَهُ فِي الْجَنَّةِ', en: '"Whoever builds a mosque for Allah, Allah will build for him a house in Paradise." — Bukhari' },
+    { ar: 'الصَّلَاةُ نُورٌ', en: '"Prayer is light." — Sahih Muslim' },
+    { ar: 'بُنِيَ الإِسْلامُ عَلَى خَمْسٍ', en: '"Islam is built upon five pillars." — Bukhari & Muslim' },
+    { ar: 'إِنَّ اللَّهَ وَمَلَائِكَتَهُ يُصَلُّونَ عَلَى النَّبِيِّ', en: '"Indeed, Allah and His angels send blessings upon the Prophet." — Quran 33:56' },
+    { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً', en: '"Our Lord, give us good in this world and good in the Hereafter." — Quran 2:201' },
+    { ar: 'أَقِمِ الصَّلَاةَ لِذِكْرِي', en: '"Establish prayer for My remembrance." — Quran 20:14' },
+];
 
-    function refreshNotice() {
-        const storedNotice = localStorage.getItem('masjidNotice');
-        // Default notice in Malayalam:
-        const defaultNotice = "സക്കരിയ്യാ ജുമാ മസ്ജിദ് ഥാന - ജമാഅത്ത് സമയം: ഫജ്‌ർ 5:00 AM, ദുഹർ 12:35 PM, അസർ 5:05 PM, മഗ്‌രിബ് 6:52 PM, ഇശാ 8:27 PM.";
-        const activeNotice = storedNotice ? storedNotice.trim() : defaultNotice;
-        
-        noticeMessage.textContent = activeNotice;
-    }
+function initTicker() {
+    const container = document.getElementById('tickerContent');
+    if (!container) return;
 
-    refreshNotice();
-
-    // Listen for changes from the admin page in real time
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'masjidNotice') {
-            refreshNotice();
+    // Build items — duplicate for seamless loop
+    let html = '';
+    const items = [...TICKER_ITEMS, ...TICKER_ITEMS]; // duplicate for seamless scroll
+    items.forEach((item, i) => {
+        html += `<span class="ticker-item"><span class="ticker-arabic">${item.ar}</span><span class="ticker-english">${item.en}</span></span>`;
+        if (i < items.length - 1) {
+            html += '<span class="ticker-separator">✦</span>';
         }
     });
+    container.innerHTML = html;
 
-    // Also check local storage every 3 seconds as a fallback
-    setInterval(refreshNotice, 3000);
+    // Set duration based on content width (measured after render)
+    requestAnimationFrame(() => {
+        const width = container.scrollWidth;
+        const speed = 60; // pixels per second
+        const duration = width / speed / 2; // /2 because we duplicate
+        container.style.setProperty('--ticker-duration', `${duration}s`);
+    });
 }
 
 // ===== Jumu'ah Friday Mode =====
@@ -525,136 +556,6 @@ function scheduleMidnightRefresh() {
     }, ms);
 }
 
-// ===== Arabic Day Names =====
-const ARABIC_DAYS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-
-function updateArabicDay() {
-    const el = document.getElementById('arabicDay');
-    if (!el) return;
-    const now = getNow();
-    el.textContent = `يوم ${ARABIC_DAYS[now.getDay()]}`;
-}
-
-// ===== Moon Phase =====
-function getMoonPhase() {
-    const now = getNow();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-
-    // Conway's moon phase approximation
-    let r = year % 100;
-    r %= 19;
-    if (r > 9) r -= 19;
-    r = ((r * 11) % 30) + month + day;
-    if (month < 3) r += 2;
-    r -= ((year < 2000) ? 4 : 8.3);
-    r = Math.floor(r + 0.5) % 30;
-    if (r < 0) r += 30;
-
-    // Map to emoji
-    if (r === 0)  return '🌑';
-    if (r <= 3)   return '🌒';
-    if (r <= 7)   return '🌓';
-    if (r <= 10)  return '🌔';
-    if (r <= 14)  return '🌕';
-    if (r <= 17)  return '🌖';
-    if (r <= 21)  return '🌗';
-    if (r <= 25)  return '🌘';
-    return '🌑';
-}
-
-function updateMoonPhase() {
-    const hijriEl = document.getElementById('hijriDate');
-    if (!hijriEl) return;
-    const moon = getMoonPhase();
-    // Prepend moon if not already there
-    const text = hijriEl.textContent.replace(/^[\u{1F311}-\u{1F318}\u{1F31D}]\s*/u, '');
-    hijriEl.textContent = `${moon} ${text}`;
-}
-
-// ===== Weather (OpenMeteo — free, no API key) =====
-async function fetchWeather() {
-    try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&current=temperature_2m,weather_code&timezone=Asia%2FKolkata`;
-        const res = await fetch(url);
-        const json = await res.json();
-        const temp = Math.round(json.current.temperature_2m);
-        const code = json.current.weather_code;
-
-        currentWeatherCode = code; // Save weather code globally
-        updateSky(); // Instantly update sky gradients and overlays based on weather
-
-        const iconEl = document.getElementById('weatherIcon');
-        const tempEl = document.getElementById('weatherTemp');
-
-        if (tempEl) tempEl.textContent = `${temp}°C`;
-        if (iconEl) iconEl.textContent = getWeatherEmoji(code);
-    } catch (e) {
-        console.error('Weather fetch failed:', e);
-    }
-}
-
-function getWeatherEmoji(code) {
-    if (code === 0) return '☀️';
-    if (code <= 3) return '⛅';
-    if (code <= 48) return '🌫️';
-    if (code <= 57) return '🌧️';
-    if (code <= 67) return '🌧️';
-    if (code <= 77) return '❄️';
-    if (code <= 82) return '🌧️';
-    if (code <= 86) return '🌨️';
-    if (code >= 95) return '⛈️';
-    return '🌤️';
-}
-
-// ===== Tahajjud Time (Last Third of Night) =====
-function updateTahajjud() {
-    const el = document.getElementById('tahajjudText');
-    if (!el) return;
-
-    const maghribMin = timeStringToMinutes(prayerTimesData.maghrib);
-    const fajrMin = timeStringToMinutes(prayerTimesData.fajr);
-
-    if (!maghribMin || !fajrMin) {
-        el.textContent = 'Tahajjud: --:--';
-        return;
-    }
-
-    // Night duration: Maghrib to Fajr (next day)
-    let nightDuration = fajrMin - maghribMin;
-    if (nightDuration < 0) nightDuration += 1440; // wrap around midnight
-
-    // Last third starts at: Maghrib + (2/3 * night duration)
-    const lastThirdStart = (maghribMin + Math.floor(nightDuration * 2 / 3)) % 1440;
-    let h = Math.floor(lastThirdStart / 60);
-    const m = lastThirdStart % 60;
-    const p = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    const timeStr = `${h}:${String(m).padStart(2, '0')} ${p}`;
-
-    el.innerHTML = `Tahajjud: <strong>${timeStr}</strong>`;
-}
-
-// ===== Fullscreen Kiosk Mode =====
-function initFullscreen() {
-    const btn = document.getElementById('fullscreenBtn');
-    if (!btn) return;
-
-    btn.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(() => {});
-        } else {
-            document.exitFullscreen().catch(() => {});
-        }
-    });
-
-    // Update button icon based on state
-    document.addEventListener('fullscreenchange', () => {
-        btn.textContent = document.fullscreenElement ? '✕' : '⛶';
-    });
-}
-
 // ===== Main Loop =====
 function tick() {
     updateClock();
@@ -662,6 +563,7 @@ function tick() {
     updateNextPrayerInfo();
     updateBanner();
     checkPrayerAlert();
+    checkPrayerSilence();
     updateJummahMode();
 }
 
@@ -670,34 +572,22 @@ document.addEventListener('DOMContentLoaded', () => {
     createStars();
     addRingGradient();
     updateGregorianDate();
-    updateArabicDay();
     updateSky();
-    initNoticeBoard();
-    initFullscreen();
-    fetchPrayerTimes().then(() => {
-        updateMoonPhase();
-        updateTahajjud();
-        updateSky();
-    });
-    fetchWeather();
+    initTicker();
+    fetchPrayerTimes();
 
     tick();
     setInterval(tick, 1000);
 
-    // Update sky, date, moon every 2 minutes
+    // Update sky & date every 2 minutes
     setInterval(() => {
         updateGregorianDate();
-        updateArabicDay();
         updateSky();
     }, 120000);
-
-    // Refresh weather every 15 minutes
-    setInterval(fetchWeather, 900000);
 
     scheduleMidnightRefresh();
 
     const overlay = document.getElementById('prayerAlertOverlay');
     if (overlay) overlay.addEventListener('click', hideAlert);
 });
-
 
