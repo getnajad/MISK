@@ -420,13 +420,23 @@ function updateClock() {
     const period = h >= 12 ? 'PM' : 'AM';
     h = h % 12 || 12;
 
-    const timeEl = document.getElementById('currentTime');
-    const secEl = document.getElementById('currentSeconds');
-    const perEl = document.getElementById('timePeriod');
+    const hoursEl = document.getElementById('heroHours');
+    const minutesEl = document.getElementById('heroMinutes');
+    const secondsEl = document.getElementById('heroSeconds');
+    const periodEl = document.getElementById('heroPeriod');
 
-    if (timeEl) timeEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    if (secEl) secEl.textContent = String(s).padStart(2, '0');
-    if (perEl) perEl.textContent = period;
+    if (hoursEl) hoursEl.textContent = String(h).padStart(2, '0');
+    if (minutesEl) minutesEl.textContent = String(m).padStart(2, '0');
+    if (secondsEl) secondsEl.textContent = String(s).padStart(2, '0');
+    if (periodEl) periodEl.textContent = period;
+
+    // Smooth progress bar update for the current minute
+    const progressFill = document.getElementById('heroProgressFill');
+    if (progressFill) {
+        const ms = now.getMilliseconds();
+        const percent = ((s + ms / 1000) / 60) * 100;
+        progressFill.style.width = `${percent}%`;
+    }
 }
 
 // ===== Update Gregorian Date =====
@@ -567,6 +577,55 @@ function tick() {
     updateJummahMode();
 }
 
+// ===== Dynamic Notice Board Sync =====
+function initNoticeBoard() {
+    refreshNotice();
+
+    // Listen for changes from the admin page in real time
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'masjidNotice1' || e.key === 'masjidNotice2' || e.key === 'masjidNotice3' || e.key === 'masjidNotice') {
+            refreshNotice();
+        }
+    });
+
+    // Also check local storage every 3 seconds as a fallback
+    setInterval(refreshNotice, 3000);
+}
+
+function refreshNotice() {
+    const el = document.getElementById('noticeMessage');
+    const container = document.querySelector('.notice-board-container');
+    if (!el) return;
+
+    // Load messages individually
+    const raw1 = localStorage.getItem('masjidNotice1');
+    const raw2 = localStorage.getItem('masjidNotice2');
+    const raw3 = localStorage.getItem('masjidNotice3');
+
+    // Default populated values on initial launch before any admin publish
+    const m1 = raw1 !== null ? raw1.trim() : "Zakariya Juma Masjid Thana Notice Board - അറിയിപ്പുകൾ ഇവിടെ കാണാം.";
+    const m2 = raw2 !== null ? raw2.trim() : "";
+    const m3 = raw3 !== null ? raw3.trim() : "";
+
+    const activeMsgs = [m1, m2, m3].filter(Boolean);
+
+    if (activeMsgs.length === 0) {
+        // Hide notice board container completely if there is nothing to display
+        if (container) container.style.display = 'none';
+        el.innerHTML = '';
+    } else {
+        // Show notice board container and display active messages stacked cleanly
+        if (container) container.style.display = 'flex';
+        
+        if (activeMsgs.length === 1) {
+            el.innerHTML = activeMsgs[0];
+        } else {
+            // Display formatted list inside the spacious 3-line container
+            el.innerHTML = activeMsgs.map(msg => `<div class="notice-line" style="margin-bottom: 4px; line-height: 1.4;">• ${msg}</div>`).join('');
+        }
+    }
+}
+
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
     createStars();
@@ -574,6 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGregorianDate();
     updateSky();
     initTicker();
+    initNoticeBoard();
     fetchPrayerTimes();
 
     tick();
