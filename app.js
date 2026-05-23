@@ -266,12 +266,17 @@ function calculateLocalPrayerTimes(targetDate) {
         return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
     };
 
+    // --- CORRECTION FOR PRINTED TIMETABLE COLUMN SHIFT BUG ---
+    // Column 5 (Asar)   = Shafi Asr (e.g. 3:48)
+    // Column 6 (Magrib) = Hanafi Asr (e.g. 4:57) -> NOT real Maghrib!
+    // Column 7 (Isha)   = Real Sunset/Maghrib (e.g. 6:48)
+    // Isha is calculated as Sunset/Maghrib + 75 minutes (1 hour 15 minutes)
     return {
         fajr: get24h(chart.Subhi, 4, false),
         dhuhr: get24h(chart.Luhar, 3, true),
         asr: get24h(chart.Asar, 5, true),
-        maghrib: get24h(chart.Magrib, 3, true),
-        isha: get24h(chart.Isha, 5, true)
+        maghrib: get24h(chart.Isha, 3, true), // Map Maghrib to Column 7 (Isha) + 3 mins offset
+        isha: get24h(chart.Isha, 78, true)    // Isha is Column 7 + 78 mins (which is Maghrib Azan + 75 mins!)
     };
 }
 
