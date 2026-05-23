@@ -426,8 +426,7 @@
             updatePreview();
             activeTextarea.focus();
         }
-
-        // Publish to LocalStorage
+        // Publish to LocalStorage and Cloud for instant TV sync
         function publishNotice() {
             if (passcodeInput.value !== '1234') {
                 alert('തെറ്റായ പാസ്‌കോഡ്! ദയവായി ശരിയായ അഡ്മിൻ പാസ്‌കോഡ് നൽകുക. (Passcode is 1234)');
@@ -439,22 +438,48 @@
             const m2 = textarea2.value.trim();
             const m3 = textarea3.value.trim();
 
+            // 1. Save locally for PC browser
             localStorage.setItem('masjidNotice1', m1);
             localStorage.setItem('masjidNotice2', m2);
             localStorage.setItem('masjidNotice3', m3);
-            
-            // Backwards compatibility sync if needed
             localStorage.setItem('masjidNotice', m1 || m2 || m3 || '');
 
-            // Dispatch storage event locally so open tabs on same page update instantly
+            // Dispatch storage event locally
             window.dispatchEvent(new Event('storage'));
 
-            // Display successful toast
+            // 2. Sync to Cloud for LCD TV (Runs completely automatically!)
+            const cloudData = {
+                m1: m1,
+                m2: m2,
+                m3: m3,
+                timestamp: Date.now()
+            };
+
             const toast = document.getElementById('toast');
+            toast.textContent = "Publishing to cloud / അപ്‌ഡേറ്റ് ചെയ്യുന്നു...";
             toast.classList.add('visible');
-            setTimeout(() => {
-                toast.classList.remove('visible');
-            }, 3500);
+
+            fetch('https://kvdb.io/zmasjidthana77/notices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cloudData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Cloud sync failed');
+                toast.textContent = "Published Successfully! / വിജയകരമായി അപ്‌ഡേറ്റ് ചെയ്തു!";
+                setTimeout(() => {
+                    toast.classList.remove('visible');
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Cloud sync error:', error);
+                toast.textContent = "Saved Locally! (TV will sync when online)";
+                setTimeout(() => {
+                    toast.classList.remove('visible');
+                }, 4000);
+            });
 
             passcodeInput.value = ''; // Reset passcode
         }

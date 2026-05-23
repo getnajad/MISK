@@ -794,36 +794,73 @@ function tick() {
 }
 
 // ===== Dynamic Notice Board Sync =====
+let lastCloudNoticeTime = 0;
+
+function syncNoticesFromCloud() {
+    fetch('https://kvdb.io/zmasjidthana77/notices')
+    .then(response => {
+        if (!response.ok) throw new Error('Cloud fetch failed');
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.timestamp && data.timestamp > lastCloudNoticeTime) {
+            lastCloudNoticeTime = data.timestamp;
+            
+            // Sync to local storage
+            localStorage.setItem('masjidNotice1', data.m1 || '');
+            localStorage.setItem('masjidNotice2', data.m2 || '');
+            localStorage.setItem('masjidNotice3', data.m3 || '');
+            localStorage.setItem('masjidNotice', (data.m1 || data.m2 || data.m3 || ''));
+            
+            // Refresh board
+            refreshNotice();
+        }
+    })
+    .catch(err => {
+        console.warn('Could not sync notices from cloud (using offline/local cache):', err);
+    });
+}
+
 function initNoticeBoard() {
     refreshNotice();
+    
+    // Fetch initial notices from cloud instantly on boot
+    syncNoticesFromCloud();
 
-    // Listen for changes from the admin page in real time
+    // Listen for changes from the admin page in real time (if open in same browser)
     window.addEventListener('storage', (e) => {
         if (e.key === 'masjidNotice1' || e.key === 'masjidNotice2' || e.key === 'masjidNotice3' || e.key === 'masjidNotice') {
             refreshNotice();
         }
     });
 
-    // Also check local storage every 3 seconds as a fallback
-    setInterval(refreshNotice, 3000);
+    // Sync from cloud every 60 seconds (completely automatic real-time TV update!)
+    setInterval(syncNoticesFromCloud, 60000);
 }
-
 function refreshNotice() {
     const el = document.getElementById('noticeMessage');
     const container = document.querySelector('.notice-board-container');
     if (!el) return;
 
-    // Load messages individually
-    const raw1 = localStorage.getItem('masjidNotice1');
-    const raw2 = localStorage.getItem('masjidNotice2');
-    const raw3 = localStorage.getItem('masjidNotice3');
+    let activeMsgs = [];
 
-    // Default populated values on initial launch before any admin publish
-    const m1 = raw1 !== null ? raw1.trim() : "Zakariya Juma Masjid Thana Notice Board - അറിയിപ്പുകൾ ഇവിടെ കാണാം.";
-    const m2 = raw2 !== null ? raw2.trim() : "";
-    const m3 = raw3 !== null ? raw3.trim() : "";
+    // 1. Try to load from global notices.js file
+    if (typeof MASJID_NOTICES !== 'undefined' && Array.isArray(MASJID_NOTICES)) {
+        activeMsgs = MASJID_NOTICES.filter(Boolean);
+    }
 
-    const activeMsgs = [m1, m2, m3].filter(Boolean);
+    // 2. Fallback to localStorage if no global notices exist or they are empty
+    if (activeMsgs.length === 0) {
+        const raw1 = localStorage.getItem('masjidNotice1');
+        const raw2 = localStorage.getItem('masjidNotice2');
+        const raw3 = localStorage.getItem('masjidNotice3');
+
+        const m1 = raw1 !== null ? raw1.trim() : "Zakariya Juma Masjid Thana Notice Board - അറിയിപ്പുകൾ ഇവിടെ കാണാം.";
+        const m2 = raw2 !== null ? raw2.trim() : "ഈ വെള്ളിയാഴ്ചത്തെ ജുമാ നമസ്കാരം 12:45 PM ന് ആരംഭിക്കുന്നതാണ്.";
+        const m3 = raw3 !== null ? raw3.trim() : "ദയവായി മൊബൈൽ ഫോണുകൾ സൈലന്റിലാക്കുക.";
+
+        activeMsgs = [m1, m2, m3].filter(Boolean);
+    }
 
     if (activeMsgs.length === 0) {
         // Hide notice board container completely if there is nothing to display

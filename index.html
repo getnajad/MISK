@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=15">
+    <link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
     <!-- Apple Weather-Style Animated Canvas Background -->
@@ -84,9 +84,10 @@
         <section class="prayer-grid" id="prayerGrid">
             <div class="prayer-card" data-prayer="fajr" id="card-fajr">
                 <div class="card-glow"></div>
-                <div class="prayer-icon">🌙</div>
-                <div class="prayer-name-ar">الفجر</div>
-                <div class="prayer-name-en">Fajr</div>
+                <div class="prayer-names">
+                    <span class="prayer-name-en">Fajr</span>
+                    <span class="prayer-name-ar">الفجر</span>
+                </div>
                 <div class="prayer-times-row">
                     <div class="time-col">
                         <span class="time-label">AZAN</span>
@@ -102,9 +103,10 @@
             </div>
             <div class="prayer-card" data-prayer="dhuhr" id="card-dhuhr">
                 <div class="card-glow"></div>
-                <div class="prayer-icon">☀️</div>
-                <div class="prayer-name-ar">الظهر</div>
-                <div class="prayer-name-en">Dhuhr</div>
+                <div class="prayer-names">
+                    <span class="prayer-name-en">Dhuhr</span>
+                    <span class="prayer-name-ar">الظهر</span>
+                </div>
                 <div class="prayer-times-row">
                     <div class="time-col">
                         <span class="time-label">AZAN</span>
@@ -120,9 +122,10 @@
             </div>
             <div class="prayer-card" data-prayer="asr" id="card-asr">
                 <div class="card-glow"></div>
-                <div class="prayer-icon">🌤️</div>
-                <div class="prayer-name-ar">العصر</div>
-                <div class="prayer-name-en">Asr</div>
+                <div class="prayer-names">
+                    <span class="prayer-name-en">Asr</span>
+                    <span class="prayer-name-ar">العصر</span>
+                </div>
                 <div class="prayer-times-row">
                     <div class="time-col">
                         <span class="time-label">AZAN</span>
@@ -138,9 +141,10 @@
             </div>
             <div class="prayer-card" data-prayer="maghrib" id="card-maghrib">
                 <div class="card-glow"></div>
-                <div class="prayer-icon">🌇</div>
-                <div class="prayer-name-ar">المغرب</div>
-                <div class="prayer-name-en">Maghrib</div>
+                <div class="prayer-names">
+                    <span class="prayer-name-en">Maghrib</span>
+                    <span class="prayer-name-ar">المغرب</span>
+                </div>
                 <div class="prayer-times-row">
                     <div class="time-col">
                         <span class="time-label">AZAN</span>
@@ -156,9 +160,10 @@
             </div>
             <div class="prayer-card" data-prayer="isha" id="card-isha">
                 <div class="card-glow"></div>
-                <div class="prayer-icon">🌃</div>
-                <div class="prayer-name-ar">العشاء</div>
-                <div class="prayer-name-en">Isha</div>
+                <div class="prayer-names">
+                    <span class="prayer-name-en">Isha</span>
+                    <span class="prayer-name-ar">العشاء</span>
+                </div>
                 <div class="prayer-times-row">
                     <div class="time-col">
                         <span class="time-label">AZAN</span>
@@ -222,7 +227,8 @@
     <!-- Fullscreen Toggle -->
     <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Fullscreen">⛶</button>
 
-    <script src="weather-canvas.js?v=15"></script>
-    <script src="app.js?v=15"></script>
+    <script src="notices.js?v=17"></script>
+    <script src="weather-canvas.js?v=17"></script>
+    <script src="app.js?v=17"></script>
 </body>
 </html>

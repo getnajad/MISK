@@ -405,7 +405,7 @@ body::before {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
-    padding: clamp(14px, 1.5vw, 24px) clamp(10px, 1vw, 16px);
+    padding: clamp(10px, 1.1vw, 16px) clamp(8px, 0.8vw, 12px);
     text-align: center;
     backdrop-filter: blur(35px) saturate(180%);
     -webkit-backdrop-filter: blur(35px) saturate(180%);
@@ -533,72 +533,75 @@ body::before {
     filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
 }
 
-.prayer-card:hover .prayer-icon {
-    transform: scale(1.15) translateY(-2px);
+.prayer-names {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(4px, 0.6vw, 10px);
+    margin-bottom: clamp(6px, 0.8vw, 10px);
+    flex-wrap: wrap;
+    line-height: 1;
 }
 
 .prayer-name-ar {
     font-family: 'Amiri', 'Noto Sans Arabic', serif;
-    font-size: clamp(1.2rem, 1.75vw, 1.95rem);
+    font-size: clamp(1.0rem, 1.3vw, 1.5rem);
     color: var(--text-primary);
     font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 4px;
+    margin-bottom: 0;
+    line-height: 1;
 }
 
 .prayer-name-en {
-    font-size: clamp(0.75rem, 1.1vw, 1.25rem);
+    font-size: clamp(0.85rem, 1.1vw, 1.25rem);
     color: var(--text-tertiary);
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 0;
+    line-height: 1;
     transition: var(--transition-smooth);
 }
-
-/* Times Layout inside complication */
-
 
 /* Times Layout inside complication (Stacked Vertically for Maximum Distance Legibility) */
 .prayer-times-row {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-    background: rgba(0, 0, 0, 0.28); /* Darkened container backdrop to pop white/neon text */
-    padding: 14px 8px;
-    border-radius: var(--radius-xl);
+    gap: clamp(2px, 0.3vw, 5px);
+    background: rgba(0, 0, 0, 0.35); /* Darkened container backdrop to pop white/neon text */
+    padding: clamp(6px, 0.8vw, 10px) clamp(4px, 0.6vw, 8px);
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(255, 255, 255, 0.03);
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .prayer-times-row.single {
-    margin-top: 8px;
+    margin-top: 6px;
     background: transparent;
     border: none;
-    padding: 4px;
+    padding: 2px;
 }
 
 .time-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: clamp(1px, 0.2vw, 3px);
     width: 100%;
     min-width: 0;
 }
 
 .time-label {
-    font-size: clamp(0.6rem, 0.8vw, 0.9rem);
+    font-size: clamp(0.55rem, 0.7vw, 0.8rem);
     color: var(--text-tertiary);
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     font-weight: 700;
 }
 
 .prayer-time {
-    font-size: clamp(1.9rem, 2.9vw, 3.4rem) !important; /* Boosted nearly 2x for miles of legibility! */
+    font-size: clamp(1.6rem, 2.4vw, 2.7rem) !important; /* Compacted slightly but still highly readable */
     font-weight: 800;
     color: #ffffff; /* Pure Solid White - Infinite contrast! */
     font-variant-numeric: tabular-nums;
@@ -616,26 +619,26 @@ body::before {
 }
 
 .iqama-time-card {
-    font-size: clamp(1.9rem, 2.9vw, 3.4rem) !important; /* Same massive readability as Azan */
+    font-size: clamp(1.6rem, 2.4vw, 2.7rem) !important; /* Same massive readability as Azan */
     color: #00ff99 !important; /* Brighter neon mint for perfect LCD contrast */
     font-weight: 800 !important;
     text-shadow: 0 0 15px rgba(0, 255, 153, 0.25), 0 4px 15px rgba(0,0,0,0.45);
 }
 
 .time-divider {
-    width: 75%;
+    width: 80%;
     height: 1px;
     background: rgba(255, 255, 255, 0.08); /* Horizontal separators instead of vertical */
     flex-shrink: 0;
-    margin: 4px 0;
+    margin: clamp(2px, 0.3vw, 4px) 0;
 }
 
 .prayer-status {
-    font-size: clamp(0.55rem, 0.75vw, 0.75rem);
-    margin-top: 8px;
-    height: 16px;
+    font-size: clamp(0.5rem, 0.65vw, 0.7rem);
+    margin-top: clamp(4px, 0.6vw, 8px);
+    height: 14px;
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     color: var(--text-tertiary);
 }
@@ -703,11 +706,13 @@ body::before {
 /* ==========================================================
    ===== Premium Glassmorphic Notice Board =====
    ========================================================== */
+
 .notice-board-container {
     display: flex;
     align-items: center;
     gap: 1.5vw;
     min-height: 140px; /* Spacious room for up to 3 static lines of text */
+    flex-shrink: 0; /* Prevent height squeezing on TV displays */
     padding: 18px 2vw;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
@@ -777,6 +782,10 @@ body::before {
 }
 
 .notice-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     font-family: 'Noto Sans Arabic', 'Amiri', 'Outfit', sans-serif;
     font-size: clamp(1.2rem, 1.6vw, 1.85rem);
     font-weight: 700;
